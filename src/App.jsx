@@ -13,7 +13,10 @@ function App() {
   const [withdrawals, setWithdrawals] = useState([]);
 
   const addWithdrawal = () => {
-    setWithdrawals([...withdrawals, { year: 1, amount: 0 }]);
+    setWithdrawals([
+      ...withdrawals,
+      { startYear: 1, endYear: 1, amount: 0, isMonthly: false },
+    ]);
   };
 
   const removeWithdrawal = (index) => {
@@ -22,7 +25,11 @@ function App() {
 
   const updateWithdrawal = (index, field, value) => {
     const updated = [...withdrawals];
-    updated[index][field] = parseFloat(value) || 0;
+    if (field === "isMonthly") {
+      updated[index][field] = value;
+    } else {
+      updated[index][field] = parseFloat(value) || 0;
+    }
     setWithdrawals(updated);
   };
 
@@ -34,12 +41,22 @@ function App() {
 
     for (let year = 1; year <= years; year++) {
       let yearInvestment = 0;
+      let yearWithdrawal = 0;
+      const yearMonthlyInvestment = currentMonthlyInvestment; // Bu yıl için kullanılan aylık yatırım
 
       // Aylık yatırımlar ve kazançlar
       for (let month = 1; month <= 12; month++) {
         currentBalance += currentMonthlyInvestment;
         yearInvestment += currentMonthlyInvestment;
         totalInvested += currentMonthlyInvestment;
+
+        // Aylık para çekme işlemleri
+        withdrawals.forEach((w) => {
+          if (w.isMonthly && year >= w.startYear && year <= w.endYear) {
+            currentBalance -= w.amount;
+            yearWithdrawal += w.amount;
+          }
+        });
 
         if (isDividendStock) {
           // Temettü hissesi: aylık hisse değer artışı
@@ -59,11 +76,13 @@ function App() {
         }
       }
 
-      // Para çekme işlemleri
-      const withdrawal = withdrawals.find((w) => w.year === year);
-      if (withdrawal) {
-        currentBalance -= withdrawal.amount;
-      }
+      // Tek seferlik para çekme işlemleri
+      withdrawals.forEach((w) => {
+        if (!w.isMonthly && year >= w.startYear && year <= w.endYear) {
+          currentBalance -= w.amount;
+          yearWithdrawal += w.amount;
+        }
+      });
 
       // Yıllık artış uygulama
       if (year < years) {
@@ -81,10 +100,7 @@ function App() {
         balance: currentBalance,
         profit: profit,
         profitPercentage: profitPercentage,
-        monthlyInvestment:
-          year < years
-            ? currentMonthlyInvestment
-            : currentMonthlyInvestment / (1 + yearlyIncrease / 100),
+        monthlyInvestment: yearMonthlyInvestment, // Bu yılda kullanılan aylık tutar
       });
     }
 
@@ -245,32 +261,77 @@ function App() {
           <div className="withdrawals-section">
             <h3>Para Çekme İşlemleri</h3>
             {withdrawals.map((withdrawal, index) => (
-              <div key={index} className="withdrawal-item">
-                <input
-                  type="number"
-                  placeholder="Yıl"
-                  min="1"
-                  max={years}
-                  value={withdrawal.year}
-                  onChange={(e) =>
-                    updateWithdrawal(index, "year", e.target.value)
-                  }
-                />
-                <input
-                  type="number"
-                  placeholder="Miktar"
-                  min="0"
-                  value={withdrawal.amount}
-                  onChange={(e) =>
-                    updateWithdrawal(index, "amount", e.target.value)
-                  }
-                />
-                <button
-                  onClick={() => removeWithdrawal(index)}
-                  className="btn-remove"
-                >
-                  ×
-                </button>
+              <div key={index} className="withdrawal-card">
+                <div className="withdrawal-header">
+                  <label className="checkbox-inline">
+                    <input
+                      type="checkbox"
+                      checked={withdrawal.isMonthly}
+                      onChange={(e) =>
+                        updateWithdrawal(index, "isMonthly", e.target.checked)
+                      }
+                    />
+                    Aylık Çekme
+                  </label>
+                  <button
+                    onClick={() => removeWithdrawal(index)}
+                    className="btn-remove-small"
+                  >
+                    ×
+                  </button>
+                </div>
+                <div className="withdrawal-inputs">
+                  <div className="input-group">
+                    <label>Başlangıç Yılı</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max={years}
+                      value={withdrawal.startYear}
+                      onChange={(e) =>
+                        updateWithdrawal(index, "startYear", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>Bitiş Yılı</label>
+                    <input
+                      type="number"
+                      min={withdrawal.startYear}
+                      max={years}
+                      value={withdrawal.endYear}
+                      onChange={(e) =>
+                        updateWithdrawal(index, "endYear", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label>{withdrawal.isMonthly ? "Aylık " : ""}Miktar</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={withdrawal.amount}
+                      onChange={(e) =>
+                        updateWithdrawal(index, "amount", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="withdrawal-info">
+                  {withdrawal.isMonthly ? (
+                    <small>
+                      {withdrawal.startYear}. yıldan {withdrawal.endYear}. yıla
+                      kadar her ay {formatCurrency(withdrawal.amount)} çekilecek
+                    </small>
+                  ) : (
+                    <small>
+                      {withdrawal.startYear === withdrawal.endYear
+                        ? `${withdrawal.startYear}. yılda`
+                        : `${withdrawal.startYear}. yıldan ${withdrawal.endYear}. yıla kadar her yıl`}{" "}
+                      {formatCurrency(withdrawal.amount)} çekilecek
+                    </small>
+                  )}
+                </div>
               </div>
             ))}
             <button onClick={addWithdrawal} className="btn-add">

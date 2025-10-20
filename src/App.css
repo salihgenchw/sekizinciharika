@@ -168,6 +168,106 @@ body {
   font-size: 1.2rem;
 }
 
+.withdrawal-card {
+  background: #f8f9ff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: border-color 0.3s;
+}
+
+.withdrawal-card:hover {
+  border-color: #667eea;
+}
+
+.withdrawal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.checkbox-inline input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.btn-remove-small {
+  background: #ff4757;
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.btn-remove-small:hover {
+  background: #ff3838;
+}
+
+.withdrawal-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input-group label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.input-group input {
+  padding: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.withdrawal-info {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.withdrawal-info small {
+  color: #666;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
 .withdrawal-item {
   display: flex;
   gap: 10px;
@@ -328,6 +428,10 @@ tbody tr:last-child td {
   td {
     padding: 8px;
   }
+
+  .withdrawal-inputs {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
@@ -350,5 +454,9 @@ tbody tr:last-child td {
 
   .summary-item .amount {
     font-size: 1.4rem;
+  }
+
+  .withdrawal-inputs {
+    grid-template-columns: 1fr;
   }
 }
