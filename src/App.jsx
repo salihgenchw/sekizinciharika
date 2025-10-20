@@ -5,6 +5,7 @@ function App() {
   const [monthlyInvestment, setMonthlyInvestment] = useState(1000);
   const [monthlyReturn, setMonthlyReturn] = useState(2);
   const [yearlyIncrease, setYearlyIncrease] = useState(10);
+  const [maxMonthlyInvestment, setMaxMonthlyInvestment] = useState(0); // 0 = sınırsız
   const [years, setYears] = useState(10);
   const [isDividendStock, setIsDividendStock] = useState(false);
   const [yearlyDividend, setYearlyDividend] = useState(5);
@@ -87,6 +88,10 @@ function App() {
       // Yıllık artış uygulama
       if (year < years) {
         currentMonthlyInvestment *= 1 + yearlyIncrease / 100;
+        // Maksimum aylık yatırım kontrolü
+        if (maxMonthlyInvestment > 0 && currentMonthlyInvestment > maxMonthlyInvestment) {
+          currentMonthlyInvestment = maxMonthlyInvestment;
+        }
       }
 
       const profit = currentBalance - totalInvested;
@@ -179,6 +184,30 @@ function App() {
               value={yearlyIncrease}
               onChange={(e) => setYearlyIncrease(parseFloat(e.target.value))}
             />
+          </div>
+
+          <div className="form-group">
+            <label>
+              Maksimum Aylık Yatırım
+              <span className="value">
+                {maxMonthlyInvestment > 0
+                  ? formatCurrency(maxMonthlyInvestment)
+                  : "Sınırsız"}
+              </span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100000"
+              step="1000"
+              value={maxMonthlyInvestment}
+              onChange={(e) =>
+                setMaxMonthlyInvestment(parseFloat(e.target.value))
+              }
+            />
+            <small style={{ color: "#666", fontSize: "0.85rem", marginTop: "5px", display: "block" }}>
+              0 = Sınırsız artış
+            </small>
           </div>
 
           <div className="form-group checkbox-group">
