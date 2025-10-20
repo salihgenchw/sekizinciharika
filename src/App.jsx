@@ -89,7 +89,10 @@ function App() {
       if (year < years) {
         currentMonthlyInvestment *= 1 + yearlyIncrease / 100;
         // Maksimum aylık yatırım kontrolü
-        if (maxMonthlyInvestment > 0 && currentMonthlyInvestment > maxMonthlyInvestment) {
+        if (
+          maxMonthlyInvestment > 0 &&
+          currentMonthlyInvestment > maxMonthlyInvestment
+        ) {
           currentMonthlyInvestment = maxMonthlyInvestment;
         }
       }
@@ -205,7 +208,14 @@ function App() {
                 setMaxMonthlyInvestment(parseFloat(e.target.value))
               }
             />
-            <small style={{ color: "#666", fontSize: "0.85rem", marginTop: "5px", display: "block" }}>
+            <small
+              style={{
+                color: "#666",
+                fontSize: "0.85rem",
+                marginTop: "5px",
+                display: "block",
+              }}
+            >
               0 = Sınırsız artış
             </small>
           </div>
