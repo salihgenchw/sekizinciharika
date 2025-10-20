@@ -1,77 +1,78 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
 function App() {
-  const [monthlyInvestment, setMonthlyInvestment] = useState(1000)
-  const [monthlyReturn, setMonthlyReturn] = useState(2)
-  const [yearlyIncrease, setYearlyIncrease] = useState(10)
-  const [years, setYears] = useState(10)
-  const [isDividendStock, setIsDividendStock] = useState(false)
-  const [yearlyDividend, setYearlyDividend] = useState(5)
-  const [monthlyStockGrowth, setMonthlyStockGrowth] = useState(1)
-  const [reinvestDividend, setReinvestDividend] = useState(true)
-  const [withdrawals, setWithdrawals] = useState([])
+  const [monthlyInvestment, setMonthlyInvestment] = useState(1000);
+  const [monthlyReturn, setMonthlyReturn] = useState(2);
+  const [yearlyIncrease, setYearlyIncrease] = useState(10);
+  const [years, setYears] = useState(10);
+  const [isDividendStock, setIsDividendStock] = useState(false);
+  const [yearlyDividend, setYearlyDividend] = useState(5);
+  const [monthlyStockGrowth, setMonthlyStockGrowth] = useState(1);
+  const [reinvestDividend, setReinvestDividend] = useState(true);
+  const [withdrawals, setWithdrawals] = useState([]);
 
   const addWithdrawal = () => {
-    setWithdrawals([...withdrawals, { year: 1, amount: 0 }])
-  }
+    setWithdrawals([...withdrawals, { year: 1, amount: 0 }]);
+  };
 
   const removeWithdrawal = (index) => {
-    setWithdrawals(withdrawals.filter((_, i) => i !== index))
-  }
+    setWithdrawals(withdrawals.filter((_, i) => i !== index));
+  };
 
   const updateWithdrawal = (index, field, value) => {
-    const updated = [...withdrawals]
-    updated[index][field] = parseFloat(value) || 0
-    setWithdrawals(updated)
-  }
+    const updated = [...withdrawals];
+    updated[index][field] = parseFloat(value) || 0;
+    setWithdrawals(updated);
+  };
 
   const calculateCompoundInterest = () => {
-    const results = []
-    let totalInvested = 0
-    let currentBalance = 0
-    let currentMonthlyInvestment = monthlyInvestment
+    const results = [];
+    let totalInvested = 0;
+    let currentBalance = 0;
+    let currentMonthlyInvestment = monthlyInvestment;
 
     for (let year = 1; year <= years; year++) {
-      let yearInvestment = 0
+      let yearInvestment = 0;
 
       // Aylık yatırımlar ve kazançlar
       for (let month = 1; month <= 12; month++) {
-        currentBalance += currentMonthlyInvestment
-        yearInvestment += currentMonthlyInvestment
-        totalInvested += currentMonthlyInvestment
+        currentBalance += currentMonthlyInvestment;
+        yearInvestment += currentMonthlyInvestment;
+        totalInvested += currentMonthlyInvestment;
 
         if (isDividendStock) {
           // Temettü hissesi: aylık hisse değer artışı
-          currentBalance *= (1 + monthlyStockGrowth / 100)
+          currentBalance *= 1 + monthlyStockGrowth / 100;
         } else {
           // Normal yatırım: aylık kazanç
-          currentBalance *= (1 + monthlyReturn / 100)
+          currentBalance *= 1 + monthlyReturn / 100;
         }
       }
 
       // Temettü hesaplaması (yıllık) - sadece temettü hissesi için
       if (isDividendStock) {
-        const dividendAmount = currentBalance * (yearlyDividend / 100)
+        const dividendAmount = currentBalance * (yearlyDividend / 100);
         if (reinvestDividend) {
-          currentBalance += dividendAmount
+          currentBalance += dividendAmount;
           // Temettü geri yatırımı totalInvested'a eklenmez
         }
       }
 
       // Para çekme işlemleri
-      const withdrawal = withdrawals.find(w => w.year === year)
+      const withdrawal = withdrawals.find((w) => w.year === year);
       if (withdrawal) {
-        currentBalance -= withdrawal.amount
+        currentBalance -= withdrawal.amount;
       }
 
       // Yıllık artış uygulama
       if (year < years) {
-        currentMonthlyInvestment *= (1 + yearlyIncrease / 100)
+        currentMonthlyInvestment *= 1 + yearlyIncrease / 100;
       }
 
-      const profit = currentBalance - totalInvested
-      const profitPercentage = totalInvested > 0 ? (profit / totalInvested) * 100 : 0
+      const profit = currentBalance - totalInvested;
+      const profitPercentage =
+        totalInvested > 0 ? (profit / totalInvested) * 100 : 0;
 
       results.push({
         year,
@@ -80,40 +81,46 @@ function App() {
         balance: currentBalance,
         profit: profit,
         profitPercentage: profitPercentage,
-        monthlyInvestment: year < years ? currentMonthlyInvestment : currentMonthlyInvestment / (1 + yearlyIncrease / 100)
-      })
+        monthlyInvestment:
+          year < years
+            ? currentMonthlyInvestment
+            : currentMonthlyInvestment / (1 + yearlyIncrease / 100),
+      });
     }
 
-    return results
-  }
+    return results;
+  };
 
-  const results = calculateCompoundInterest()
-  const finalResult = results[results.length - 1]
+  const results = calculateCompoundInterest();
+  const finalResult = results[results.length - 1];
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
+    return new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency: "TRY",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount)
-  }
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   const formatPercent = (value) => {
-    return value.toFixed(2) + '%'
-  }
+    return value.toFixed(2) + "%";
+  };
 
   return (
     <div className="app">
       <header className="header">
         <h1>🌟 Dünyanın 8. Harikası: Bileşik Faiz</h1>
-        <p className="quote">"Bileşik faiz dünyanın sekizinci harikasıdır. Onu anlayan kazanır, anlamayan öder." - Albert Einstein</p>
+        <p className="quote">
+          "Bileşik faiz dünyanın sekizinci harikasıdır. Onu anlayan kazanır,
+          anlamayan öder." - Albert Einstein
+        </p>
       </header>
 
       <div className="container">
         <div className="calculator">
           <h2>Hesaplama Parametreleri</h2>
-          
+
           <div className="form-group">
             <label>
               Başlangıç Aylık Yatırım Miktarı
@@ -174,7 +181,9 @@ function App() {
               <div className="form-group">
                 <label>
                   Aylık Hisse Değer Artışı
-                  <span className="value">{formatPercent(monthlyStockGrowth)}</span>
+                  <span className="value">
+                    {formatPercent(monthlyStockGrowth)}
+                  </span>
                 </label>
                 <input
                   type="range"
@@ -182,7 +191,9 @@ function App() {
                   max="10"
                   step="0.1"
                   value={monthlyStockGrowth}
-                  onChange={(e) => setMonthlyStockGrowth(parseFloat(e.target.value))}
+                  onChange={(e) =>
+                    setMonthlyStockGrowth(parseFloat(e.target.value))
+                  }
                 />
               </div>
 
@@ -197,7 +208,9 @@ function App() {
                   max="20"
                   step="0.1"
                   value={yearlyDividend}
-                  onChange={(e) => setYearlyDividend(parseFloat(e.target.value))}
+                  onChange={(e) =>
+                    setYearlyDividend(parseFloat(e.target.value))
+                  }
                 />
               </div>
 
@@ -239,19 +252,30 @@ function App() {
                   min="1"
                   max={years}
                   value={withdrawal.year}
-                  onChange={(e) => updateWithdrawal(index, 'year', e.target.value)}
+                  onChange={(e) =>
+                    updateWithdrawal(index, "year", e.target.value)
+                  }
                 />
                 <input
                   type="number"
                   placeholder="Miktar"
                   min="0"
                   value={withdrawal.amount}
-                  onChange={(e) => updateWithdrawal(index, 'amount', e.target.value)}
+                  onChange={(e) =>
+                    updateWithdrawal(index, "amount", e.target.value)
+                  }
                 />
-                <button onClick={() => removeWithdrawal(index)} className="btn-remove">×</button>
+                <button
+                  onClick={() => removeWithdrawal(index)}
+                  className="btn-remove"
+                >
+                  ×
+                </button>
               </div>
             ))}
-            <button onClick={addWithdrawal} className="btn-add">+ Para Çekme Ekle</button>
+            <button onClick={addWithdrawal} className="btn-add">
+              + Para Çekme Ekle
+            </button>
           </div>
         </div>
 
@@ -261,19 +285,27 @@ function App() {
             <div className="summary-grid">
               <div className="summary-item">
                 <span className="label">Toplam Yatırım</span>
-                <span className="amount invested">{formatCurrency(finalResult?.totalInvested || 0)}</span>
+                <span className="amount invested">
+                  {formatCurrency(finalResult?.totalInvested || 0)}
+                </span>
               </div>
               <div className="summary-item">
                 <span className="label">Toplam Değer</span>
-                <span className="amount balance">{formatCurrency(finalResult?.balance || 0)}</span>
+                <span className="amount balance">
+                  {formatCurrency(finalResult?.balance || 0)}
+                </span>
               </div>
               <div className="summary-item">
                 <span className="label">Net Kazanç</span>
-                <span className="amount profit">{formatCurrency(finalResult?.profit || 0)}</span>
+                <span className="amount profit">
+                  {formatCurrency(finalResult?.profit || 0)}
+                </span>
               </div>
               <div className="summary-item">
                 <span className="label">Kazanç Oranı</span>
-                <span className="amount percent">{formatPercent(finalResult?.profitPercentage || 0)}</span>
+                <span className="amount percent">
+                  {formatPercent(finalResult?.profitPercentage || 0)}
+                </span>
               </div>
             </div>
           </div>
@@ -300,8 +332,12 @@ function App() {
                       <td>{formatCurrency(result.monthlyInvestment)}</td>
                       <td>{formatCurrency(result.invested)}</td>
                       <td>{formatCurrency(result.totalInvested)}</td>
-                      <td className="highlight">{formatCurrency(result.balance)}</td>
-                      <td className={result.profit >= 0 ? 'positive' : 'negative'}>
+                      <td className="highlight">
+                        {formatCurrency(result.balance)}
+                      </td>
+                      <td
+                        className={result.profit >= 0 ? "positive" : "negative"}
+                      >
                         {formatCurrency(result.profit)}
                       </td>
                       <td>{formatPercent(result.profitPercentage)}</td>
@@ -314,7 +350,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
