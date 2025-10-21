@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
+  const [currency, setCurrency] = useState("TRY"); // TRY veya USD
+  const [initialCapital, setInitialCapital] = useState(0); // Peşinat/Başlangıç sermayesi
   const [monthlyInvestment, setMonthlyInvestment] = useState(1000);
   const [monthlyReturn, setMonthlyReturn] = useState(2);
   const [yearlyIncrease, setYearlyIncrease] = useState(10);
@@ -36,26 +38,38 @@ function App() {
 
   const calculateCompoundInterest = () => {
     const results = [];
-    let totalInvested = 0;
-    let currentBalance = 0;
+    let totalInvested = initialCapital; // Başlangıç sermayesini toplam yatırıma ekle
+    let currentBalance = initialCapital; // Başlangıç bakiyesi
     let currentMonthlyInvestment = monthlyInvestment;
+
+    // Para çekmenin başladığı en erken yılı bul
+    const firstWithdrawalYear =
+      withdrawals.length > 0
+        ? Math.min(...withdrawals.map((w) => w.startYear))
+        : Infinity;
 
     for (let year = 1; year <= years; year++) {
       let yearInvestment = 0;
-      let yearWithdrawal = 0;
       const yearMonthlyInvestment = currentMonthlyInvestment; // Bu yıl için kullanılan aylık yatırım
+
+      // Para çekme başladıysa yatırım yapma
+      const shouldInvest = year < firstWithdrawalYear;
+
+      // Yıl başı bakiyesini temettü hesabı için sakla
+      const balanceAtYearStart = currentBalance;
 
       // Aylık yatırımlar ve kazançlar
       for (let month = 1; month <= 12; month++) {
-        currentBalance += currentMonthlyInvestment;
-        yearInvestment += currentMonthlyInvestment;
-        totalInvested += currentMonthlyInvestment;
+        if (shouldInvest) {
+          currentBalance += currentMonthlyInvestment;
+          yearInvestment += currentMonthlyInvestment;
+          totalInvested += currentMonthlyInvestment;
+        }
 
         // Aylık para çekme işlemleri
         withdrawals.forEach((w) => {
           if (w.isMonthly && year >= w.startYear && year <= w.endYear) {
             currentBalance -= w.amount;
-            yearWithdrawal += w.amount;
           }
         });
 
@@ -69,10 +83,14 @@ function App() {
       }
 
       // Temettü hesaplaması (yıllık) - sadece temettü hissesi için
+      // Gerçek hayatta temettü yıl başındaki bakiyeye göre hesaplanır
+      let yearlyDividendAmount = 0;
+      let monthlyDividendSalary = 0;
       if (isDividendStock) {
-        const dividendAmount = currentBalance * (yearlyDividend / 100);
+        yearlyDividendAmount = balanceAtYearStart * (yearlyDividend / 100);
+        monthlyDividendSalary = yearlyDividendAmount / 12;
         if (reinvestDividend) {
-          currentBalance += dividendAmount;
+          currentBalance += yearlyDividendAmount;
           // Temettü geri yatırımı totalInvested'a eklenmez
         }
       }
@@ -81,12 +99,11 @@ function App() {
       withdrawals.forEach((w) => {
         if (!w.isMonthly && year >= w.startYear && year <= w.endYear) {
           currentBalance -= w.amount;
-          yearWithdrawal += w.amount;
         }
       });
 
       // Yıllık artış uygulama
-      if (year < years) {
+      if (year < years && shouldInvest) {
         currentMonthlyInvestment *= 1 + yearlyIncrease / 100;
         // Maksimum aylık yatırım kontrolü
         if (
@@ -108,7 +125,8 @@ function App() {
         balance: currentBalance,
         profit: profit,
         profitPercentage: profitPercentage,
-        monthlyInvestment: yearMonthlyInvestment, // Bu yılda kullanılan aylık tutar
+        monthlyInvestment: shouldInvest ? yearMonthlyInvestment : 0, // Para çekme başladıysa 0
+        monthlyDividendSalary: monthlyDividendSalary, // Aylık temettü maaşı
       });
     }
 
@@ -118,10 +136,16 @@ function App() {
   const results = calculateCompoundInterest();
   const finalResult = results[results.length - 1];
 
+  // Para çekmenin başladığı en erken yılı bul (tablo vurgulaması için)
+  const firstWithdrawalYear =
+    withdrawals.length > 0
+      ? Math.min(...withdrawals.map((w) => w.startYear))
+      : Infinity;
+
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("tr-TR", {
+    return new Intl.NumberFormat(currency === "TRY" ? "tr-TR" : "en-US", {
       style: "currency",
-      currency: "TRY",
+      currency: currency,
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -144,6 +168,52 @@ function App() {
       <div className="container">
         <div className="calculator">
           <h2>Hesaplama Parametreleri</h2>
+
+          <div className="form-group">
+            <label>
+              Para Birimi
+              <span className="value">{currency}</span>
+            </label>
+            <div className="currency-selector">
+              <button
+                className={`currency-btn ${currency === "TRY" ? "active" : ""}`}
+                onClick={() => setCurrency("TRY")}
+              >
+                TRY (₺)
+              </button>
+              <button
+                className={`currency-btn ${currency === "USD" ? "active" : ""}`}
+                onClick={() => setCurrency("USD")}
+              >
+                USD ($)
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>
+              Başlangıç Sermayesi (Peşinat)
+              <span className="value">{formatCurrency(initialCapital)}</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="500000"
+              step="1000"
+              value={initialCapital}
+              onChange={(e) => setInitialCapital(parseFloat(e.target.value))}
+            />
+            <small
+              style={{
+                color: "#666",
+                fontSize: "0.85rem",
+                marginTop: "5px",
+                display: "block",
+              }}
+            >
+              Hali hazırda sahip olduğunuz para
+            </small>
+          </div>
 
           <div className="form-group">
             <label>
@@ -299,6 +369,13 @@ function App() {
 
           <div className="withdrawals-section">
             <h3>Para Çekme İşlemleri</h3>
+            <div className="info-note">
+              <span className="info-icon">ℹ️</span>
+              <span>
+                Para çekmeye başladığınız yıldan itibaren aylık yatırımlar
+                duracaktır.
+              </span>
+            </div>
             {withdrawals.map((withdrawal, index) => (
               <div key={index} className="withdrawal-card">
                 <div className="withdrawal-header">
@@ -383,6 +460,14 @@ function App() {
           <div className="summary">
             <h2>Özet</h2>
             <div className="summary-grid">
+              {initialCapital > 0 && (
+                <div className="summary-item">
+                  <span className="label">Başlangıç Sermayesi</span>
+                  <span className="amount initial">
+                    {formatCurrency(initialCapital)}
+                  </span>
+                </div>
+              )}
               <div className="summary-item">
                 <span className="label">Toplam Yatırım</span>
                 <span className="amount invested">
@@ -395,6 +480,14 @@ function App() {
                   {formatCurrency(finalResult?.balance || 0)}
                 </span>
               </div>
+              {isDividendStock && (
+                <div className="summary-item dividend">
+                  <span className="label">Aylık Temettü Maaşı</span>
+                  <span className="amount dividend-amount">
+                    {formatCurrency(finalResult?.monthlyDividendSalary || 0)}
+                  </span>
+                </div>
+              )}
               <div className="summary-item">
                 <span className="label">Net Kazanç</span>
                 <span className="amount profit">
@@ -412,6 +505,14 @@ function App() {
 
           <div className="yearly-breakdown">
             <h2>Yıllık Detay</h2>
+            {withdrawals.length > 0 && (
+              <div className="table-legend">
+                <span className="legend-item">
+                  <span className="legend-color withdrawal"></span>
+                  <span>Para çekme dönemi (yatırım yapılmıyor)</span>
+                </span>
+              </div>
+            )}
             <div className="table-container">
               <table>
                 <thead>
@@ -421,28 +522,43 @@ function App() {
                     <th>Yıllık Yatırım</th>
                     <th>Toplam Yatırım</th>
                     <th>Bakiye</th>
+                    {isDividendStock && <th>Temettü Maaşı</th>}
                     <th>Kazanç</th>
                     <th>Kazanç %</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((result) => (
-                    <tr key={result.year}>
-                      <td>{result.year}</td>
-                      <td>{formatCurrency(result.monthlyInvestment)}</td>
-                      <td>{formatCurrency(result.invested)}</td>
-                      <td>{formatCurrency(result.totalInvested)}</td>
-                      <td className="highlight">
-                        {formatCurrency(result.balance)}
-                      </td>
-                      <td
-                        className={result.profit >= 0 ? "positive" : "negative"}
+                  {results.map((result) => {
+                    const isWithdrawalPhase =
+                      result.year >= firstWithdrawalYear;
+                    return (
+                      <tr
+                        key={result.year}
+                        className={isWithdrawalPhase ? "withdrawal-phase" : ""}
                       >
-                        {formatCurrency(result.profit)}
-                      </td>
-                      <td>{formatPercent(result.profitPercentage)}</td>
-                    </tr>
-                  ))}
+                        <td>{result.year}</td>
+                        <td>{formatCurrency(result.monthlyInvestment)}</td>
+                        <td>{formatCurrency(result.invested)}</td>
+                        <td>{formatCurrency(result.totalInvested)}</td>
+                        <td className="highlight">
+                          {formatCurrency(result.balance)}
+                        </td>
+                        {isDividendStock && (
+                          <td className="dividend-salary">
+                            {formatCurrency(result.monthlyDividendSalary)}
+                          </td>
+                        )}
+                        <td
+                          className={
+                            result.profit >= 0 ? "positive" : "negative"
+                          }
+                        >
+                          {formatCurrency(result.profit)}
+                        </td>
+                        <td>{formatPercent(result.profitPercentage)}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
