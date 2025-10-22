@@ -38,8 +38,8 @@ function App() {
 
   const calculateCompoundInterest = () => {
     const results = [];
-    let totalInvested = initialCapital; // Başlangıç sermayesini toplam yatırıma ekle
-    let currentBalance = initialCapital; // Başlangıç bakiyesi
+    let totalInvested = initialCapital;
+    let currentBalance = initialCapital;
     let currentMonthlyInvestment = monthlyInvestment;
 
     // Para çekmenin başladığı en erken yılı bul
@@ -50,40 +50,34 @@ function App() {
 
     for (let year = 1; year <= years; year++) {
       let yearInvestment = 0;
-      const yearMonthlyInvestment = currentMonthlyInvestment; // Bu yıl için kullanılan aylık yatırım
-
-      // Para çekme başladıysa yatırım yapma
+      const yearMonthlyInvestment = currentMonthlyInvestment;
       const shouldInvest = year < firstWithdrawalYear;
-
-      // Yıl başı bakiyesini temettü hesabı için sakla
       const balanceAtYearStart = currentBalance;
 
-      // Aylık yatırımlar ve kazançlar
       for (let month = 1; month <= 12; month++) {
-        if (shouldInvest) {
-          currentBalance += currentMonthlyInvestment;
-          yearInvestment += currentMonthlyInvestment;
-          totalInvested += currentMonthlyInvestment;
+        // 💰 Önce faiz işle
+        if (isDividendStock) {
+          currentBalance *= 1 + monthlyStockGrowth / 100;
+        } else {
+          currentBalance *= 1 + monthlyReturn / 100;
         }
 
-        // Aylık para çekme işlemleri
+        // 💸 Aylık para çekme
         withdrawals.forEach((w) => {
           if (w.isMonthly && year >= w.startYear && year <= w.endYear) {
             currentBalance -= w.amount;
           }
         });
 
-        if (isDividendStock) {
-          // Temettü hissesi: aylık hisse değer artışı
-          currentBalance *= 1 + monthlyStockGrowth / 100;
-        } else {
-          // Normal yatırım: aylık kazanç
-          currentBalance *= 1 + monthlyReturn / 100;
+        // 💵 Yatırım yıl başlamadan yapılmıyorsa (örneğin emekli olduktan sonra)
+        if (shouldInvest) {
+          currentBalance += currentMonthlyInvestment;
+          yearInvestment += currentMonthlyInvestment;
+          totalInvested += currentMonthlyInvestment;
         }
       }
 
-      // Temettü hesaplaması (yıllık) - sadece temettü hissesi için
-      // Gerçek hayatta temettü yıl başındaki bakiyeye göre hesaplanır
+      // 📈 Temettü hesaplaması
       let yearlyDividendAmount = 0;
       let monthlyDividendSalary = 0;
       if (isDividendStock) {
@@ -91,21 +85,19 @@ function App() {
         monthlyDividendSalary = yearlyDividendAmount / 12;
         if (reinvestDividend) {
           currentBalance += yearlyDividendAmount;
-          // Temettü geri yatırımı totalInvested'a eklenmez
         }
       }
 
-      // Tek seferlik para çekme işlemleri
+      // 💰 Yıllık tek seferlik para çekme
       withdrawals.forEach((w) => {
         if (!w.isMonthly && year >= w.startYear && year <= w.endYear) {
           currentBalance -= w.amount;
         }
       });
 
-      // Yıllık artış uygulama
+      // 🔁 Yıllık yatırım artışı
       if (year < years && shouldInvest) {
         currentMonthlyInvestment *= 1 + yearlyIncrease / 100;
-        // Maksimum aylık yatırım kontrolü
         if (
           maxMonthlyInvestment > 0 &&
           currentMonthlyInvestment > maxMonthlyInvestment
@@ -121,12 +113,12 @@ function App() {
       results.push({
         year,
         invested: yearInvestment,
-        totalInvested: totalInvested,
+        totalInvested,
         balance: currentBalance,
-        profit: profit,
-        profitPercentage: profitPercentage,
-        monthlyInvestment: shouldInvest ? yearMonthlyInvestment : 0, // Para çekme başladıysa 0
-        monthlyDividendSalary: monthlyDividendSalary, // Aylık temettü maaşı
+        profit,
+        profitPercentage,
+        monthlyInvestment: shouldInvest ? yearMonthlyInvestment : 0,
+        monthlyDividendSalary,
       });
     }
 
