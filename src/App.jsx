@@ -55,29 +55,29 @@ function App() {
       const balanceAtYearStart = currentBalance;
 
       for (let month = 1; month <= 12; month++) {
-        // 💰 Önce faiz işle
-        if (isDividendStock) {
-          currentBalance *= 1 + monthlyStockGrowth / 100;
-        } else {
-          currentBalance *= 1 + monthlyReturn / 100;
+        // 💰 Önce yatırım yap (ay başında)
+        if (shouldInvest) {
+          currentBalance += currentMonthlyInvestment;
+          yearInvestment += currentMonthlyInvestment;
+          totalInvested += currentMonthlyInvestment;
         }
 
-        // 💸 Aylık para çekme
+        // 💸 Aylık para çekme işlemleri
         withdrawals.forEach((w) => {
           if (w.isMonthly && year >= w.startYear && year <= w.endYear) {
             currentBalance -= w.amount;
           }
         });
 
-        // 💵 Yatırım yıl başlamadan yapılmıyorsa (örneğin emekli olduktan sonra)
-        if (shouldInvest) {
-          currentBalance += currentMonthlyInvestment;
-          yearInvestment += currentMonthlyInvestment;
-          totalInvested += currentMonthlyInvestment;
+        // 📈 Faizi uygula (yatırımdan sonra)
+        if (isDividendStock) {
+          currentBalance *= 1 + monthlyStockGrowth / 100;
+        } else {
+          currentBalance *= 1 + monthlyReturn / 100;
         }
       }
 
-      // 📈 Temettü hesaplaması
+      // 📊 Temettü (yıl sonu)
       let yearlyDividendAmount = 0;
       let monthlyDividendSalary = 0;
       if (isDividendStock) {
@@ -88,7 +88,7 @@ function App() {
         }
       }
 
-      // 💰 Yıllık tek seferlik para çekme
+      // 💵 Tek seferlik yıllık çekim
       withdrawals.forEach((w) => {
         if (!w.isMonthly && year >= w.startYear && year <= w.endYear) {
           currentBalance -= w.amount;
