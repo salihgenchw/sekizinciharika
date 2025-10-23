@@ -125,7 +125,6 @@ function App() {
         invested: yearInvestment,
         totalInvested,
         balance: currentBalance,
-<<<<<<< HEAD
         profit: profit,
         profitPercentage: profitPercentage,
         monthlyInvestment: shouldInvest ? yearMonthlyInvestment : 0, // Para çekme başladıysa 0
@@ -134,12 +133,6 @@ function App() {
         realProfit: realProfit, // Enflasyona göre düzeltilmiş kazanç
         realProfitPercentage: realProfitPercentage, // Enflasyona göre düzeltilmiş kazanç yüzdesi
         realMonthlyDividendSalary: realMonthlyDividendSalary, // Enflasyona göre düzeltilmiş temettü
-=======
-        profit,
-        profitPercentage,
-        monthlyInvestment: shouldInvest ? yearMonthlyInvestment : 0,
-        monthlyDividendSalary,
->>>>>>> 1b8db8d08a261f7745ddb1ded694a0ef44c5b693
       });
     }
 
