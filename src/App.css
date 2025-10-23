@@ -5,10 +5,17 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background: #0a0a0a;
+  background-image: radial-gradient(
+      at 0% 0%,
+      rgba(147, 51, 234, 0.15) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
   min-height: 100vh;
-  color: #333;
+  color: #ffffff;
 }
 
 .app {
@@ -20,12 +27,19 @@ body {
   text-align: center;
   color: white;
   margin-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 30px;
 }
 
 .header h1 {
   font-size: 2.5rem;
   margin-bottom: 15px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: -1.5px;
 }
 
 .quote {
@@ -33,7 +47,8 @@ body {
   font-size: 1.1rem;
   max-width: 800px;
   margin: 0 auto;
-  opacity: 0.95;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
 }
 
 .container {
@@ -46,10 +61,12 @@ body {
 
 .calculator,
 .results {
-  background: white;
-  border-radius: 16px;
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
   padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .calculator {
@@ -65,50 +82,110 @@ body {
 }
 
 .calculator::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
 }
 
 .calculator::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 100%);
   border-radius: 10px;
 }
 
 .calculator::-webkit-scrollbar-thumb:hover {
-  background: #5568d3;
+  background: linear-gradient(180deg, #a78bfa 0%, #818cf8 100%);
 }
 
 .calculator h2,
 .results h2 {
-  color: #667eea;
+  background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 25px;
   font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .form-group {
   margin-bottom: 25px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.form-group:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .form-group label {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   font-weight: 600;
-  color: #555;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
 }
 
 .form-group .value {
-  color: #667eea;
+  color: #a78bfa;
   font-size: 1.1rem;
   font-weight: 700;
+  text-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+}
+
+.input-with-slider {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.direct-input {
+  width: 120px;
+  padding: 10px 14px;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: none;
+}
+
+.direct-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.direct-input::-webkit-inner-spin-button,
+.direct-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.input-with-slider input[type="range"] {
+  flex: 1;
 }
 
 .form-group input[type="range"] {
   width: 100%;
-  height: 8px;
+  height: 6px;
   border-radius: 5px;
-  background: #e0e0e0;
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.3) 0%,
+    rgba(99, 102, 241, 0.3) 100%
+  );
   outline: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -117,33 +194,39 @@ body {
 .form-group input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #667eea;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
 }
 
 .form-group input[type="range"]::-webkit-slider-thumb:hover,
 .form-group input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.2);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.3),
+    0 0 20px rgba(139, 92, 246, 0.5);
 }
 
 .form-group input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #667eea;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   cursor: pointer;
   border: none;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
 }
 
 .form-group input[type="range"]::-moz-range-thumb:hover,
 .form-group input[type="range"]::-moz-range-thumb:active {
-  transform: scale(1.2);
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px rgba(139, 92, 246, 0.3),
+    0 0 20px rgba(139, 92, 246, 0.5);
 }
 
 .checkbox-group label {
@@ -151,13 +234,14 @@ body {
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  color: #ffffff;
 }
 
 .checkbox-group input[type="checkbox"] {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #ffffff;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -170,59 +254,66 @@ body {
 .currency-btn {
   flex: 1;
   padding: 12px 20px;
-  background: #f8f9ff;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
-  color: #667eea;
+  color: rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .currency-btn:hover {
-  background: #e8e9ff;
-  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #ffffff;
 }
 
 .currency-btn.active {
-  background: #667eea;
-  color: white;
-  border-color: #667eea;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
 }
 
 .checkbox-inline input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #ffffff;
   -webkit-tap-highlight-color: transparent;
 }
 
 .withdrawals-section {
   margin-top: 30px;
-  padding-top: 20px;
-  border-top: 2px solid #e0e0e0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .withdrawals-section h3 {
-  color: #667eea;
-  margin-bottom: 15px;
+  background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 18px;
   font-size: 1.2rem;
+  font-weight: 700;
 }
 
 .info-note {
-  background: #e3f2fd;
-  border-left: 4px solid #2196f3;
-  padding: 12px 15px;
+  background: rgba(139, 92, 246, 0.1);
+  border-left: 3px solid #8b5cf6;
+  padding: 14px 18px;
   margin-bottom: 15px;
-  border-radius: 4px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.9rem;
-  color: #1565c0;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .info-icon {
@@ -231,16 +322,18 @@ body {
 }
 
 .withdrawal-card {
-  background: #f8f9ff;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
   margin-bottom: 15px;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .withdrawal-card:hover {
-  border-color: #667eea;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
 }
 
 .withdrawal-header {
@@ -256,26 +349,26 @@ body {
   gap: 8px;
   cursor: pointer;
   font-weight: 600;
-  color: #667eea;
+  color: #ffffff;
 }
 
 .checkbox-inline input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #ffffff;
 }
 
 .btn-remove-small {
-  background: #ff4757;
-  color: white;
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-size: 1.3rem;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,7 +379,10 @@ body {
 
 .btn-remove-small:hover,
 .btn-remove-small:active {
-  background: #ff3838;
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
 .withdrawal-inputs {
@@ -304,16 +400,18 @@ body {
 
 .input-group label {
   font-size: 0.85rem;
-  color: #666;
+  color: #999;
   font-weight: 500;
 }
 
 .input-group input {
-  padding: 8px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   font-size: 0.95rem;
-  transition: border-color 0.3s;
+  background: rgba(0, 0, 0, 0.4);
+  color: #ffffff;
+  transition: all 0.3s ease;
   -webkit-appearance: none;
   -moz-appearance: textfield;
   appearance: none;
@@ -321,7 +419,9 @@ body {
 
 .input-group input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #8b5cf6;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 /* Number input scroll engellemesi */
@@ -335,11 +435,11 @@ body {
 .withdrawal-info {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #333;
 }
 
 .withdrawal-info small {
-  color: #666;
+  color: #999;
   font-size: 0.85rem;
   font-style: italic;
 }
@@ -353,20 +453,22 @@ body {
 .withdrawal-item input {
   flex: 1;
   padding: 10px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #333;
   border-radius: 8px;
   font-size: 1rem;
+  background: #0a0a0a;
+  color: #ffffff;
   transition: border-color 0.3s;
 }
 
 .withdrawal-item input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #ffffff;
 }
 
 .btn-remove {
-  background: #ff4757;
-  color: white;
+  background: #ffffff;
+  color: #0a0a0a;
   border: none;
   width: 40px;
   border-radius: 8px;
@@ -376,27 +478,29 @@ body {
 }
 
 .btn-remove:hover {
-  background: #ff3838;
+  background: #ccc;
 }
 
 .btn-add {
   width: 100%;
-  padding: 12px;
-  background: #667eea;
-  color: white;
+  padding: 14px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
   margin-top: 10px;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
 .btn-add:hover,
 .btn-add:active {
-  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(139, 92, 246, 0.5);
 }
 
 .summary {
@@ -410,31 +514,70 @@ body {
 }
 
 .summary-item {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.1) 0%,
+    rgba(99, 102, 241, 0.1) 100%
+  );
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 24px;
+  border-radius: 20px;
   color: white;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
+}
+
+.summary-item:hover {
+  border-color: rgba(139, 92, 246, 0.6);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.3);
 }
 
 .summary-item.dividend {
-  background: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.1) 0%,
+    rgba(167, 139, 250, 0.1) 100%
+  );
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.summary-item.dividend::before {
+  background: linear-gradient(90deg, #ec4899 0%, #a78bfa 100%);
 }
 
 .summary-item .label {
   font-size: 0.9rem;
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .summary-item .amount {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
 }
 
 .summary-item .amount.initial {
-  background: linear-gradient(90deg, #ffd700 0%, #ffed4e 100%);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -445,8 +588,9 @@ body {
   gap: 20px;
   margin-bottom: 15px;
   padding: 10px;
-  background: #f8f9ff;
+  background: #0a0a0a;
   border-radius: 8px;
+  border: 1px solid #333;
 }
 
 .legend-item {
@@ -454,24 +598,26 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: #555;
+  color: #ccc;
 }
 
 .legend-color {
   width: 24px;
   height: 16px;
   border-radius: 4px;
-  border: 1px solid #ddd;
+  border: 1px solid #333;
 }
 
 .legend-color.withdrawal {
-  background: #fff8e1;
+  background: #333;
+  border-color: #666;
 }
 
 .table-container {
   overflow-x: auto;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 table {
@@ -480,33 +626,46 @@ table {
 }
 
 thead {
-  background: #667eea;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.2) 0%,
+    rgba(99, 102, 241, 0.2) 100%
+  );
   color: white;
+  border-bottom: 2px solid rgba(139, 92, 246, 0.5);
 }
 
 th {
-  padding: 15px;
+  padding: 16px;
   text-align: left;
   font-weight: 600;
   font-size: 0.9rem;
+  color: #a78bfa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 0.9rem;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+tbody tr {
+  transition: all 0.2s ease;
 }
 
 tbody tr:hover {
-  background: #f8f9ff;
+  background: rgba(139, 92, 246, 0.1);
 }
 
 tbody tr.withdrawal-phase {
-  background: #fff8e1;
+  background: rgba(236, 72, 153, 0.05);
 }
 
 tbody tr.withdrawal-phase:hover {
-  background: #fff3cd;
+  background: rgba(236, 72, 153, 0.15);
 }
 
 tbody tr:last-child td {
@@ -515,22 +674,23 @@ tbody tr:last-child td {
 
 .highlight {
   font-weight: 700;
-  color: #667eea;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
 }
 
 .positive {
-  color: #2ecc71;
+  color: #10b981;
   font-weight: 600;
 }
 
 .dividend-salary {
-  color: #9c27b0;
+  color: #ec4899;
   font-weight: 700;
-  background: #f3e5f5;
+  background: rgba(236, 72, 153, 0.1);
 }
 
 .negative {
-  color: #e74c3c;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 600;
 }
 

@@ -14,6 +14,7 @@ function App() {
   const [monthlyStockGrowth, setMonthlyStockGrowth] = useState(1);
   const [reinvestDividend, setReinvestDividend] = useState(true);
   const [withdrawals, setWithdrawals] = useState([]);
+  const [yearlyInflation, setYearlyInflation] = useState(0); // Yıllık enflasyon oranı
 
   const addWithdrawal = () => {
     setWithdrawals([
@@ -118,6 +119,15 @@ function App() {
       const profitPercentage =
         totalInvested > 0 ? (profit / totalInvested) * 100 : 0;
 
+      // Enflasyon etkisiyle düzeltilmiş değerler (bugünkü para değeri)
+      const inflationMultiplier = Math.pow(1 + yearlyInflation / 100, year);
+      const realBalance = currentBalance / inflationMultiplier;
+      const realProfit = realBalance - totalInvested;
+      const realProfitPercentage =
+        totalInvested > 0 ? (realProfit / totalInvested) * 100 : 0;
+      const realMonthlyDividendSalary =
+        monthlyDividendSalary / inflationMultiplier;
+
       results.push({
         year,
         invested: yearInvestment,
@@ -127,6 +137,10 @@ function App() {
         profitPercentage: profitPercentage,
         monthlyInvestment: shouldInvest ? yearMonthlyInvestment : 0, // Para çekme başladıysa 0
         monthlyDividendSalary: monthlyDividendSalary, // Aylık temettü maaşı
+        realBalance: realBalance, // Enflasyona göre düzeltilmiş bakiye
+        realProfit: realProfit, // Enflasyona göre düzeltilmiş kazanç
+        realProfitPercentage: realProfitPercentage, // Enflasyona göre düzeltilmiş kazanç yüzdesi
+        realMonthlyDividendSalary: realMonthlyDividendSalary, // Enflasyona göre düzeltilmiş temettü
       });
     }
 
@@ -157,14 +171,6 @@ function App() {
 
   return (
     <div className="app">
-      <header className="header">
-        <h1>🌟 Dünyanın 8. Harikası: Bileşik Faiz</h1>
-        <p className="quote">
-          "Bileşik faiz dünyanın sekizinci harikasıdır. Onu anlayan kazanır,
-          anlamayan öder." - Albert Einstein
-        </p>
-      </header>
-
       <div className="container">
         <div className="calculator">
           <h2>Hesaplama Parametreleri</h2>
@@ -195,14 +201,27 @@ function App() {
               Başlangıç Sermayesi (Peşinat)
               <span className="value">{formatCurrency(initialCapital)}</span>
             </label>
-            <input
-              type="range"
-              min="0"
-              max="500000"
-              step="1000"
-              value={initialCapital}
-              onChange={(e) => setInitialCapital(parseFloat(e.target.value))}
-            />
+            <div className="input-with-slider">
+              <input
+                type="number"
+                min="0"
+                max="10000000"
+                step="1000"
+                value={initialCapital}
+                onChange={(e) =>
+                  setInitialCapital(parseFloat(e.target.value) || 0)
+                }
+                className="direct-input"
+              />
+              <input
+                type="range"
+                min="0"
+                max="500000"
+                step="1000"
+                value={initialCapital}
+                onChange={(e) => setInitialCapital(parseFloat(e.target.value))}
+              />
+            </div>
             <small
               style={{
                 color: "#666",
@@ -220,14 +239,29 @@ function App() {
               Başlangıç Aylık Yatırım Miktarı
               <span className="value">{formatCurrency(monthlyInvestment)}</span>
             </label>
-            <input
-              type="range"
-              min="100"
-              max="50000"
-              step="100"
-              value={monthlyInvestment}
-              onChange={(e) => setMonthlyInvestment(parseFloat(e.target.value))}
-            />
+            <div className="input-with-slider">
+              <input
+                type="number"
+                min="100"
+                max="10000000"
+                step="100"
+                value={monthlyInvestment}
+                onChange={(e) =>
+                  setMonthlyInvestment(parseFloat(e.target.value) || 0)
+                }
+                className="direct-input"
+              />
+              <input
+                type="range"
+                min="100"
+                max="50000"
+                step="100"
+                value={monthlyInvestment}
+                onChange={(e) =>
+                  setMonthlyInvestment(parseFloat(e.target.value))
+                }
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -235,13 +269,61 @@ function App() {
               Yatırım Süresi (Yıl)
               <span className="value">{years}</span>
             </label>
-            <input
-              type="range"
-              min="1"
-              max="40"
-              value={years}
-              onChange={(e) => setYears(parseInt(e.target.value))}
-            />
+            <div className="input-with-slider">
+              <input
+                type="number"
+                min="1"
+                max="100"
+                value={years}
+                onChange={(e) => setYears(parseInt(e.target.value) || 1)}
+                className="direct-input"
+              />
+              <input
+                type="range"
+                min="1"
+                max="40"
+                value={years}
+                onChange={(e) => setYears(parseInt(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>
+              Yıllık Enflasyon Oranı
+              <span className="value">{formatPercent(yearlyInflation)}</span>
+            </label>
+            <div className="input-with-slider">
+              <input
+                type="number"
+                min="0"
+                max="200"
+                step="0.5"
+                value={yearlyInflation}
+                onChange={(e) =>
+                  setYearlyInflation(parseFloat(e.target.value) || 0)
+                }
+                className="direct-input"
+              />
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="0.5"
+                value={yearlyInflation}
+                onChange={(e) => setYearlyInflation(parseFloat(e.target.value))}
+              />
+            </div>
+            <small
+              style={{
+                color: "#666",
+                fontSize: "0.85rem",
+                marginTop: "5px",
+                display: "block",
+              }}
+            >
+              Paranın satın alma gücündeki kayıp
+            </small>
           </div>
 
           <div className="form-group">
@@ -249,14 +331,27 @@ function App() {
               Yıllık Aylık Yatırım Artışı
               <span className="value">{formatPercent(yearlyIncrease)}</span>
             </label>
-            <input
-              type="range"
-              min="0"
-              max="50"
-              step="0.5"
-              value={yearlyIncrease}
-              onChange={(e) => setYearlyIncrease(parseFloat(e.target.value))}
-            />
+            <div className="input-with-slider">
+              <input
+                type="number"
+                min="0"
+                max="200"
+                step="0.5"
+                value={yearlyIncrease}
+                onChange={(e) =>
+                  setYearlyIncrease(parseFloat(e.target.value) || 0)
+                }
+                className="direct-input"
+              />
+              <input
+                type="range"
+                min="0"
+                max="50"
+                step="0.5"
+                value={yearlyIncrease}
+                onChange={(e) => setYearlyIncrease(parseFloat(e.target.value))}
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -268,16 +363,29 @@ function App() {
                   : "Sınırsız"}
               </span>
             </label>
-            <input
-              type="range"
-              min="0"
-              max="100000"
-              step="1000"
-              value={maxMonthlyInvestment}
-              onChange={(e) =>
-                setMaxMonthlyInvestment(parseFloat(e.target.value))
-              }
-            />
+            <div className="input-with-slider">
+              <input
+                type="number"
+                min="0"
+                max="10000000"
+                step="1000"
+                value={maxMonthlyInvestment}
+                onChange={(e) =>
+                  setMaxMonthlyInvestment(parseFloat(e.target.value) || 0)
+                }
+                className="direct-input"
+              />
+              <input
+                type="range"
+                min="0"
+                max="100000"
+                step="1000"
+                value={maxMonthlyInvestment}
+                onChange={(e) =>
+                  setMaxMonthlyInvestment(parseFloat(e.target.value))
+                }
+              />
+            </div>
             <small
               style={{
                 color: "#666",
@@ -310,16 +418,29 @@ function App() {
                     {formatPercent(monthlyStockGrowth)}
                   </span>
                 </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="10"
-                  step="0.1"
-                  value={monthlyStockGrowth}
-                  onChange={(e) =>
-                    setMonthlyStockGrowth(parseFloat(e.target.value))
-                  }
-                />
+                <div className="input-with-slider">
+                  <input
+                    type="number"
+                    min="0"
+                    max="50"
+                    step="0.1"
+                    value={monthlyStockGrowth}
+                    onChange={(e) =>
+                      setMonthlyStockGrowth(parseFloat(e.target.value) || 0)
+                    }
+                    className="direct-input"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    value={monthlyStockGrowth}
+                    onChange={(e) =>
+                      setMonthlyStockGrowth(parseFloat(e.target.value))
+                    }
+                  />
+                </div>
               </div>
 
               <div className="form-group">
@@ -327,16 +448,29 @@ function App() {
                   Yıllık Temettü Oranı
                   <span className="value">{formatPercent(yearlyDividend)}</span>
                 </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="20"
-                  step="0.1"
-                  value={yearlyDividend}
-                  onChange={(e) =>
-                    setYearlyDividend(parseFloat(e.target.value))
-                  }
-                />
+                <div className="input-with-slider">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={yearlyDividend}
+                    onChange={(e) =>
+                      setYearlyDividend(parseFloat(e.target.value) || 0)
+                    }
+                    className="direct-input"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    step="0.1"
+                    value={yearlyDividend}
+                    onChange={(e) =>
+                      setYearlyDividend(parseFloat(e.target.value))
+                    }
+                  />
+                </div>
               </div>
 
               <div className="form-group checkbox-group">
@@ -356,14 +490,27 @@ function App() {
                 Aylık Ortalama Kazanç
                 <span className="value">{formatPercent(monthlyReturn)}</span>
               </label>
-              <input
-                type="range"
-                min="0"
-                max="10"
-                step="0.1"
-                value={monthlyReturn}
-                onChange={(e) => setMonthlyReturn(parseFloat(e.target.value))}
-              />
+              <div className="input-with-slider">
+                <input
+                  type="number"
+                  min="0"
+                  max="50"
+                  step="0.1"
+                  value={monthlyReturn}
+                  onChange={(e) =>
+                    setMonthlyReturn(parseFloat(e.target.value) || 0)
+                  }
+                  className="direct-input"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  value={monthlyReturn}
+                  onChange={(e) => setMonthlyReturn(parseFloat(e.target.value))}
+                />
+              </div>
             </div>
           )}
 
@@ -475,10 +622,15 @@ function App() {
                 </span>
               </div>
               <div className="summary-item">
-                <span className="label">Toplam Değer</span>
+                <span className="label">Toplam Değer (Nominal)</span>
                 <span className="amount balance">
                   {formatCurrency(finalResult?.balance || 0)}
                 </span>
+                {yearlyInflation > 0 && (
+                  <small style={{ opacity: 0.8, fontSize: "0.8rem" }}>
+                    Reel: {formatCurrency(finalResult?.realBalance || 0)}
+                  </small>
+                )}
               </div>
               {isDividendStock && (
                 <div className="summary-item dividend">
@@ -486,19 +638,38 @@ function App() {
                   <span className="amount dividend-amount">
                     {formatCurrency(finalResult?.monthlyDividendSalary || 0)}
                   </span>
+                  {yearlyInflation > 0 && (
+                    <small style={{ opacity: 0.8, fontSize: "0.8rem" }}>
+                      Reel:{" "}
+                      {formatCurrency(
+                        finalResult?.realMonthlyDividendSalary || 0
+                      )}
+                    </small>
+                  )}
                 </div>
               )}
               <div className="summary-item">
-                <span className="label">Net Kazanç</span>
+                <span className="label">Net Kazanç (Nominal)</span>
                 <span className="amount profit">
                   {formatCurrency(finalResult?.profit || 0)}
                 </span>
+                {yearlyInflation > 0 && (
+                  <small style={{ opacity: 0.8, fontSize: "0.8rem" }}>
+                    Reel: {formatCurrency(finalResult?.realProfit || 0)}
+                  </small>
+                )}
               </div>
               <div className="summary-item">
                 <span className="label">Kazanç Oranı</span>
                 <span className="amount percent">
                   {formatPercent(finalResult?.profitPercentage || 0)}
                 </span>
+                {yearlyInflation > 0 && (
+                  <small style={{ opacity: 0.8, fontSize: "0.8rem" }}>
+                    Reel:{" "}
+                    {formatPercent(finalResult?.realProfitPercentage || 0)}
+                  </small>
+                )}
               </div>
             </div>
           </div>
