@@ -849,7 +849,8 @@ function App() {
                       fontWeight: "600",
                     }}
                   >
-                    💡 %4 Kuralı: Portföyünüzün %4'ünü her yıl çekerseniz, 30 yıl boyunca paranız bitmez (Trinity Study)
+                    💡 %4 Kuralı: Portföyünüzün %4'ünü her yıl çekerseniz, 30
+                    yıl boyunca paranız bitmez (Trinity Study)
                   </small>
                 </div>
 
