@@ -525,6 +525,17 @@ function App() {
             >
               Paranın satın alma gücündeki kayıp
             </small>
+            <small
+              style={{
+                color: "#a78bfa",
+                fontSize: "0.75rem",
+                marginTop: "3px",
+                display: "block",
+                fontWeight: "600",
+              }}
+            >
+              📊 TR'de son 10 yılın ortalaması %38
+            </small>
           </div>
 
           <div className="form-group">
