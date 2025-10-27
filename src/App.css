@@ -293,6 +293,162 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Döviz Kurları Bölümü */
+.exchange-rates-section {
+  margin: 20px 0;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+
+.exchange-rates-section:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.exchange-rates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  transition: all 0.2s ease;
+}
+
+.exchange-rates-header:hover {
+  color: #a78bfa;
+}
+
+.refresh-rates-btn {
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.refresh-rates-btn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: #8b5cf6;
+  transform: rotate(180deg);
+}
+
+.refresh-rates-btn:active:not(:disabled) {
+  transform: rotate(360deg) scale(0.95);
+}
+
+.refresh-rates-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.exchange-rates-grid {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exchange-rate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.exchange-rate-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.exchange-rate-item label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.currency-flag {
+  font-size: 1.2rem;
+}
+
+.exchange-input {
+  width: 100px;
+  padding: 8px 12px;
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #a78bfa;
+  background: rgba(0, 0, 0, 0.4);
+  text-align: right;
+  transition: all 0.3s ease;
+}
+
+.exchange-input:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.exchange-input::placeholder {
+  color: rgba(167, 139, 250, 0.3);
+}
+
+.exchange-rate-info {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exchange-conversions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.conversion-item {
+  padding: 8px 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.05) 0%,
+    rgba(99, 102, 241, 0.05) 100%
+  );
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.conversion-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.conversion-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
 .withdrawals-section {
   margin-top: 30px;
   padding-top: 24px;
@@ -893,6 +1049,16 @@ tbody tr:last-child td {
     margin-bottom: 12px;
   }
 
+  .exchange-conversions {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .exchange-input {
+    width: 90px;
+    font-size: 0.85rem;
+  }
+
   .input-group input {
     padding: 12px;
     font-size: 0.9rem;
@@ -1141,6 +1307,36 @@ tbody tr:last-child td {
   .form-group {
     margin-bottom: 12px;
     padding: 8px;
+  }
+
+  .exchange-rates-section {
+    padding: 10px;
+  }
+
+  .exchange-rate-item {
+    padding: 8px;
+  }
+
+  .exchange-rate-item label {
+    font-size: 0.75rem;
+  }
+
+  .exchange-input {
+    width: 80px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .conversion-item {
+    padding: 6px 8px;
+  }
+
+  .conversion-label {
+    font-size: 0.65rem;
+  }
+
+  .conversion-value {
+    font-size: 0.75rem;
   }
 
   .form-group label {

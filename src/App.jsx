@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 function App() {
@@ -21,6 +21,62 @@ function App() {
   const [monthlyExpenses, setMonthlyExpenses] = useState(10000); // Aylık harcama
   const [currentAge, setCurrentAge] = useState(30); // Mevcut yaş
   const [safeWithdrawalRate, setSafeWithdrawalRate] = useState(4); // %4 kuralı
+
+  // Döviz kurları
+  const [exchangeRates, setExchangeRates] = useState({
+    USD: 34.5,
+    EUR: 37.2,
+  });
+  const [showExchangeRates, setShowExchangeRates] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
+
+  // API'den döviz kurlarını çek
+  const fetchExchangeRates = async () => {
+    setIsLoadingRates(true);
+    try {
+      // exchangerate-api.com - Ücretsiz, API key gerektirmiyor
+      const response = await fetch(
+        "https://api.exchangerate-api.com/v4/latest/TRY"
+      );
+      const data = await response.json();
+
+      if (data && data.rates) {
+        // TRY bazlı olduğu için, USD ve EUR'nun TRY karşılığını hesaplıyoruz
+        const usdRate = 1 / data.rates.USD; // 1 USD = X TRY
+        const eurRate = 1 / data.rates.EUR; // 1 EUR = X TRY
+
+        setExchangeRates({
+          USD: parseFloat(usdRate.toFixed(2)),
+          EUR: parseFloat(eurRate.toFixed(2)),
+        });
+        setLastUpdate(new Date());
+      }
+    } catch (error) {
+      console.error("Döviz kurları alınamadı:", error);
+      // Hata durumunda kullanıcıya bilgi ver
+      alert("Döviz kurları güncellenemedi. Varsayılan değerler kullanılıyor.");
+    } finally {
+      setIsLoadingRates(false);
+    }
+  };
+
+  // Sayfa yüklendiğinde kurları çek
+  useEffect(() => {
+    if (currency === "TRY") {
+      fetchExchangeRates();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Sadece ilk yüklemede
+
+  // Döviz kurlarını güncelle
+  const updateExchangeRate = (currencyCode, rate) => {
+    setExchangeRates((prev) => ({
+      ...prev,
+      [currencyCode]: parseFloat(rate) || 0,
+    }));
+    setLastUpdate(new Date());
+  };
 
   const addWithdrawal = () => {
     setWithdrawals([
@@ -221,6 +277,125 @@ function App() {
               </button>
             </div>
           </div>
+
+          {/* Döviz Kurları Bölümü */}
+          {currency === "TRY" && (
+            <div className="exchange-rates-section">
+              <div
+                className="exchange-rates-header"
+                onClick={() => setShowExchangeRates(!showExchangeRates)}
+                style={{ cursor: "pointer", userSelect: "none" }}
+              >
+                <h3
+                  style={{
+                    fontSize: "0.9rem",
+                    margin: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  💱 Döviz Kurları {showExchangeRates ? "▼" : "▶"}
+                </h3>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  {lastUpdate && (
+                    <small style={{ fontSize: "0.7rem", color: "#666" }}>
+                      {lastUpdate.toLocaleTimeString("tr-TR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </small>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fetchExchangeRates();
+                    }}
+                    disabled={isLoadingRates}
+                    className="refresh-rates-btn"
+                    title="Kurları Yenile"
+                  >
+                    {isLoadingRates ? "⏳" : "🔄"}
+                  </button>
+                </div>
+              </div>
+
+              {showExchangeRates && (
+                <div className="exchange-rates-grid">
+                  <div className="exchange-rate-item">
+                    <label>
+                      <span className="currency-flag">🇺🇸</span>
+                      <span>USD/TRY</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={exchangeRates.USD}
+                      onChange={(e) =>
+                        updateExchangeRate("USD", e.target.value)
+                      }
+                      className="exchange-input"
+                      placeholder="34.50"
+                      disabled={isLoadingRates}
+                    />
+                  </div>
+
+                  <div className="exchange-rate-item">
+                    <label>
+                      <span className="currency-flag">🇪🇺</span>
+                      <span>EUR/TRY</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={exchangeRates.EUR}
+                      onChange={(e) =>
+                        updateExchangeRate("EUR", e.target.value)
+                      }
+                      className="exchange-input"
+                      placeholder="37.20"
+                      disabled={isLoadingRates}
+                    />
+                  </div>
+
+                  <div className="exchange-rate-info">
+                    <div className="info-note" style={{ marginBottom: 0 }}>
+                      <span className="info-icon">💡</span>
+                      <span style={{ fontSize: "0.75rem" }}>
+                        Kurlar otomatik çekilir. Manuel düzenleyebilirsiniz.
+                      </span>
+                    </div>
+                    <div className="exchange-conversions">
+                      <div className="conversion-item">
+                        <span className="conversion-label">1,000 USD =</span>
+                        <span className="conversion-value">
+                          {(1000 * exchangeRates.USD).toLocaleString("tr-TR", {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })}{" "}
+                          ₺
+                        </span>
+                      </div>
+                      <div className="conversion-item">
+                        <span className="conversion-label">1,000 EUR =</span>
+                        <span className="conversion-value">
+                          {(1000 * exchangeRates.EUR).toLocaleString("tr-TR", {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          })}{" "}
+                          ₺
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="form-group">
             <label>
