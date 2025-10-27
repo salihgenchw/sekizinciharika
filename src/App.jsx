@@ -16,6 +16,12 @@ function App() {
   const [withdrawals, setWithdrawals] = useState([]);
   const [yearlyInflation, setYearlyInflation] = useState(0); // Yıllık enflasyon oranı
 
+  // FIRE hesaplayıcı için yeni state'ler
+  const [enableFIRE, setEnableFIRE] = useState(false);
+  const [monthlyExpenses, setMonthlyExpenses] = useState(10000); // Aylık harcama
+  const [currentAge, setCurrentAge] = useState(30); // Mevcut yaş
+  const [safeWithdrawalRate, setSafeWithdrawalRate] = useState(4); // %4 kuralı
+
   const addWithdrawal = () => {
     setWithdrawals([
       ...withdrawals,
@@ -160,6 +166,34 @@ function App() {
   const formatPercent = (value) => {
     return value.toFixed(2) + "%";
   };
+
+  // FIRE hesaplaması
+  const calculateFIRE = () => {
+    if (!enableFIRE) return null;
+
+    const yearlyExpenses = monthlyExpenses * 12;
+    const fireNumber = yearlyExpenses * (100 / safeWithdrawalRate); // 4% kuralı
+
+    // Hangi yıl FIRE sayısına ulaşılıyor?
+    const fireYear = results.findIndex((r) => r.balance >= fireNumber);
+    const fireAge = fireYear !== -1 ? currentAge + fireYear : null;
+
+    // FIRE'dan sonra aylık pasif gelir
+    const monthlyPassiveIncome =
+      fireYear !== -1
+        ? (results[fireYear].balance * (safeWithdrawalRate / 100)) / 12
+        : 0;
+
+    return {
+      fireNumber,
+      fireYear: fireYear !== -1 ? fireYear : null,
+      fireAge,
+      monthlyPassiveIncome,
+      yearlyExpenses,
+    };
+  };
+
+  const fireData = calculateFIRE();
 
   return (
     <div className="app">
@@ -507,6 +541,162 @@ function App() {
           )}
 
           <div className="withdrawals-section">
+            <h3>🔥 FIRE Hesaplayıcı (Financial Independence Retire Early)</h3>
+            <div className="form-group">
+              <label className="checkbox-group">
+                <input
+                  type="checkbox"
+                  checked={enableFIRE}
+                  onChange={(e) => setEnableFIRE(e.target.checked)}
+                />
+                FIRE Hesaplamasını Aktif Et
+              </label>
+            </div>
+
+            {enableFIRE && (
+              <>
+                <div className="form-group">
+                  <label>
+                    Mevcut Yaşınız
+                    <span className="value">{currentAge}</span>
+                  </label>
+                  <div className="input-with-slider">
+                    <input
+                      type="number"
+                      min="18"
+                      max="100"
+                      value={currentAge}
+                      onChange={(e) =>
+                        setCurrentAge(parseFloat(e.target.value) || 18)
+                      }
+                      className="direct-input"
+                    />
+                    <input
+                      type="range"
+                      min="18"
+                      max="80"
+                      value={currentAge}
+                      onChange={(e) =>
+                        setCurrentAge(parseFloat(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    Aylık Harcamanız
+                    <span className="value">
+                      {formatCurrency(monthlyExpenses)}
+                    </span>
+                  </label>
+                  <div className="input-with-slider">
+                    <input
+                      type="number"
+                      min="0"
+                      step="100"
+                      value={monthlyExpenses}
+                      onChange={(e) =>
+                        setMonthlyExpenses(parseFloat(e.target.value) || 0)
+                      }
+                      className="direct-input"
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="100000"
+                      step="1000"
+                      value={monthlyExpenses}
+                      onChange={(e) =>
+                        setMonthlyExpenses(parseFloat(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>
+                    Güvenli Çekme Oranı (%)
+                    <span className="value">
+                      {formatPercent(safeWithdrawalRate)}
+                    </span>
+                  </label>
+                  <div className="input-with-slider">
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      step="0.1"
+                      value={safeWithdrawalRate}
+                      onChange={(e) =>
+                        setSafeWithdrawalRate(parseFloat(e.target.value) || 4)
+                      }
+                      className="direct-input"
+                    />
+                    <input
+                      type="range"
+                      min="2"
+                      max="8"
+                      step="0.1"
+                      value={safeWithdrawalRate}
+                      onChange={(e) =>
+                        setSafeWithdrawalRate(parseFloat(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="info-note">
+                  <span className="info-icon">💡</span>
+                  <span>
+                    FIRE sayınız (Mali bağımsızlık için gereken sermaye):{" "}
+                    <strong>{formatCurrency(fireData?.fireNumber || 0)}</strong>
+                  </span>
+                </div>
+
+                {fireData?.fireYear && (
+                  <div
+                    className="info-note"
+                    style={{
+                      borderLeftColor: "#10b981",
+                      background: "rgba(16, 185, 129, 0.1)",
+                    }}
+                  >
+                    <span className="info-icon">🎯</span>
+                    <span>
+                      <strong>{fireData.fireYear}. yılda</strong> FIRE hedefine
+                      ulaşacaksınız! ({fireData.fireAge} yaşında emekli
+                      olabilirsiniz)
+                      <br />
+                      Aylık pasif geliriniz:{" "}
+                      <strong>
+                        {formatCurrency(fireData.monthlyPassiveIncome)}
+                      </strong>
+                    </span>
+                  </div>
+                )}
+
+                {fireData && !fireData.fireYear && (
+                  <div
+                    className="info-note"
+                    style={{
+                      borderLeftColor: "#ef4444",
+                      background: "rgba(239, 68, 68, 0.1)",
+                    }}
+                  >
+                    <span className="info-icon">⚠️</span>
+                    <span>
+                      Mevcut planla {years} yıl içinde FIRE hedefine
+                      ulaşamıyorsunuz. Aylık yatırımı artırın veya
+                      harcamalarınızı azaltın.
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="withdrawals-section">
             <h3>Para Çekme İşlemleri</h3>
             <div className="info-note">
               <span className="info-icon">ℹ️</span>
@@ -663,6 +853,24 @@ function App() {
                   </small>
                 )}
               </div>
+              {enableFIRE && fireData?.fireYear && (
+                <div
+                  className="summary-item"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%)",
+                    borderColor: "rgba(16, 185, 129, 0.3)",
+                  }}
+                >
+                  <span className="label">🔥 FIRE Yaşı</span>
+                  <span className="amount" style={{ color: "#10b981" }}>
+                    {fireData.fireAge}
+                  </span>
+                  <small style={{ opacity: 0.8, fontSize: "0.8rem" }}>
+                    {fireData.fireYear}. yılda
+                  </small>
+                </div>
+              )}
             </div>
           </div>
 
@@ -694,12 +902,18 @@ function App() {
                   {results.map((result) => {
                     const isWithdrawalPhase =
                       result.year >= firstWithdrawalYear;
+                    const isFIREYear =
+                      enableFIRE && fireData?.fireYear === result.year;
                     return (
                       <tr
                         key={result.year}
-                        className={isWithdrawalPhase ? "withdrawal-phase" : ""}
+                        className={`${
+                          isWithdrawalPhase ? "withdrawal-phase" : ""
+                        } ${isFIREYear ? "fire-year" : ""}`}
                       >
-                        <td>{result.year}</td>
+                        <td>
+                          {result.year} {isFIREYear && "🔥"}
+                        </td>
                         <td>{formatCurrency(result.monthlyInvestment)}</td>
                         <td>{formatCurrency(result.invested)}</td>
                         <td>{formatCurrency(result.totalInvested)}</td>

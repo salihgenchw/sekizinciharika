@@ -670,6 +670,17 @@ tbody tr.withdrawal-phase:hover {
   background: rgba(236, 72, 153, 0.15);
 }
 
+tbody tr.fire-year {
+  background: rgba(16, 185, 129, 0.1);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  font-weight: 700;
+}
+
+tbody tr.fire-year:hover {
+  background: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
 tbody tr:last-child td {
   border-bottom: none;
 }
