@@ -830,6 +830,27 @@ function App() {
                       }
                     />
                   </div>
+                  <small
+                    style={{
+                      color: "#666",
+                      fontSize: "0.85rem",
+                      marginTop: "5px",
+                      display: "block",
+                    }}
+                  >
+                    Her yıl portföyünüzden çekebileceğiniz oran
+                  </small>
+                  <small
+                    style={{
+                      color: "#a78bfa",
+                      fontSize: "0.75rem",
+                      marginTop: "3px",
+                      display: "block",
+                      fontWeight: "600",
+                    }}
+                  >
+                    💡 %4 Kuralı: Portföyünüzün %4'ünü her yıl çekerseniz, 30 yıl boyunca paranız bitmez (Trinity Study)
+                  </small>
                 </div>
 
                 <div className="info-note">
